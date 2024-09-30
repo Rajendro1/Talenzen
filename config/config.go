@@ -1,0 +1,18 @@
+package config
+
+const (
+    DBUser = "postgres"
+    DBPassword = "password"
+    DBName = "taskmanagement"
+    DBHost = "localhost"
+    DBPort = "5432"
+    JWTSecret = "your_jwt_secret_here"
+    SMTPServer = "smtp.gmail.com"
+    SMTPPort = "587"
+    SMTPUsername = "your.email@gmail.com"
+    SMTPPassword = "yourpassword"
+)
+
+func GetDatabaseConnectionString() string {
+    return "host=" + DBHost + " user=" + DBUser + " password=" + DBPassword + " dbname=" + DBName + " sslmode=disable"
+}
