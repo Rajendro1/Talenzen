@@ -5,12 +5,21 @@ import (
 	"strings"
 
 	"github.com/Rajendro1/Talenzen/db/pgd"
+	"github.com/Rajendro1/Talenzen/middleware"
 	"github.com/Rajendro1/Talenzen/model"
 	"github.com/gin-gonic/gin"
 )
 
 func LoginHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+	user_id := c.Request.FormValue("user_id")
+	email := c.Request.FormValue("email")
+
+	token, err := middleware.CreateToken(user_id, email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func RegisterHandler(c *gin.Context) {
