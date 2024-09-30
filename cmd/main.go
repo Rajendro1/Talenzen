@@ -1,24 +1,16 @@
 package main
 
 import (
-	"github.com/Rajendro1/Talenzen/db"
-	"github.com/Rajendro1/Talenzen/handler/auth"
-	"github.com/Rajendro1/Talenzen/handler/task"
-	"github.com/gin-gonic/gin"
+	"github.com/Rajendro1/Talenzen/config"
+	"github.com/Rajendro1/Talenzen/db/pgd"
+	"github.com/Rajendro1/Talenzen/route"
 )
 
-func main() {
-	db.SetupDatabase()
-	router := gin.Default()
-	handleRequests(router)
-	router.Run(":8080")
-}
+func init() {
+	config.PgDbWrite = pgd.SetupReadDatabase()
+	config.PgDbWrite = pgd.SetupWriteDatabase()
 
-func handleRequests(router *gin.Engine) {
-	router.POST("/login", auth.LoginHandler)
-	router.POST("/register", auth.RegisterHandler)
-	router.GET("/tasks", task.GetTasksHandler)
-	router.POST("/tasks", task.CreateTaskHandler)
-	router.PUT("/tasks/:id", task.UpdateTaskHandler)
-	router.DELETE("/tasks/:id", task.DeleteTaskHandler)
+}
+func main() {
+	route.HandleRequests()
 }
