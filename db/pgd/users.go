@@ -7,8 +7,8 @@ import (
 	"github.com/Rajendro1/Talenzen/model"
 )
 
-func CreateUser(user model.User) error {
-	_, err := config.PgDbWrite.Exec(context.Background(), "INSERT INTO users (name, email) VALUES ($1, $2)", user.Name, user.Email)
+func CreateUser(user model.UserInput) error {
+	_, err := config.PgDbWrite.Exec(context.Background(), "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", user.Name, user.Email, user.Password)
 	return err
 }
 

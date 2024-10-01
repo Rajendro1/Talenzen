@@ -22,6 +22,11 @@ type (
 		Email    string `json:"email"`
 		Password string `json:"-"`
 	}
+	UserInput struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
 	Claims struct {
 		UserID int    `json:"user_id"`
 		Email  string `json:"email"`

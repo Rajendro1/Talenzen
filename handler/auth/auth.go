@@ -8,6 +8,7 @@ import (
 	"github.com/Rajendro1/Talenzen/middleware"
 	"github.com/Rajendro1/Talenzen/model"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,6 +18,10 @@ func LoginHandler(c *gin.Context) {
 
 	user, err := pgd.GetUserByEmail(email)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found", "details": err.Error()})
 		return
 	}
@@ -31,14 +36,14 @@ func LoginHandler(c *gin.Context) {
 	// Generate JWT token
 	token, err := middleware.CreateToken(user.ID, user.Email)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create token", "error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func RegisterHandler(c *gin.Context) {
-	var newUser model.User
+	var newUser model.UserInput
 	if err := c.BindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user data", "details": err.Error()})
 		return

@@ -21,9 +21,8 @@ func CreateToken(user_id int, email string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(config.JWTSecret)
+	return token.SignedString([]byte(config.JWTSecret))
 }
-
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
