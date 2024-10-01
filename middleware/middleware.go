@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CreateToken(user_id, email string) (string, error) {
+func CreateToken(user_id int, email string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &model.Claims{
 		UserID: user_id,

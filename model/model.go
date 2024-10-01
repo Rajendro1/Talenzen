@@ -17,12 +17,13 @@ type (
 	}
 
 	User struct {
-		ID    int    `json:"id"`
-		Name  string `json:"name"`
-		Email string `json:"email"`
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"-"`
 	}
 	Claims struct {
-		UserID string `json:"user_id"`
+		UserID int    `json:"user_id"`
 		Email  string `json:"email"`
 		jwt.StandardClaims
 	}

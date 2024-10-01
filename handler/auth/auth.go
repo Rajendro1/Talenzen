@@ -8,13 +8,28 @@ import (
 	"github.com/Rajendro1/Talenzen/middleware"
 	"github.com/Rajendro1/Talenzen/model"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func LoginHandler(c *gin.Context) {
-	user_id := c.Request.FormValue("user_id")
 	email := c.Request.FormValue("email")
+	password := c.Request.FormValue("password")
 
-	token, err := middleware.CreateToken(user_id, email)
+	user, err := pgd.GetUserByEmail(email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found", "details": err.Error()})
+		return
+	}
+
+	// Check if the hashed password and the given password match
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials", "details": "Incorrect password"})
+		return
+	}
+
+	// Generate JWT token
+	token, err := middleware.CreateToken(user.ID, user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
 		return
@@ -29,8 +44,16 @@ func RegisterHandler(c *gin.Context) {
 		return
 	}
 
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password", "details": err.Error()})
+		return
+	}
+	newUser.Password = string(hashedPassword)
+
+	// Create user in the database
 	if err := pgd.CreateUser(newUser); err != nil {
-		// Check for a unique violation error (example for PostgreSQL)
 		if strings.Contains(err.Error(), "unique_violation") {
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
 			return

@@ -23,3 +23,12 @@ func TaskExists(taskID int) bool {
 	err := config.PgDbRead.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM tasks WHERE id = $1)", taskID).Scan(&exists)
 	return err == nil && exists
 }
+func GetUserByEmail(email string) (model.User, error) {
+	var user model.User
+	query := `SELECT id, name, email, password FROM users WHERE email = $1`
+	err := config.PgDbRead.QueryRow(context.Background(), query, email).Scan(&user.ID, &user.Name, &user.Email, &user.Password)
+	if err != nil {
+		return model.User{}, err
+	}
+	return user, nil
+}

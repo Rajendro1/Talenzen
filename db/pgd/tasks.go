@@ -47,7 +47,7 @@ func DeleteTask(id int) error {
 	return err
 }
 
-func AssignTask(userID, taskID int, assign_by string) error {
+func AssignTask(userID, taskID, assign_by int) error {
 	_, err := config.PgDbWrite.Exec(context.Background(), "INSERT INTO map_users_with_tasks (user_id, task_id, assign_by) VALUES ($1, $2, $3)", userID, taskID)
 	return err
 }
