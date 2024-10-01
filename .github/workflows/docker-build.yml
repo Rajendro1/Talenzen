@@ -32,7 +32,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ github.repository }}/myapp:latest
+        tags: ghcr.io/${{ github.repository }}/assignment:latest
 
     - name: Image digest
       run: echo ${{ steps.build-and-push.outputs.digest }}
