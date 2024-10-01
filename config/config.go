@@ -11,7 +11,7 @@ const (
 	SMTPServer   = "smtp.gmail.com"
 	SMTPPort     = "587"
 	SMTPUsername = "rajandroprosad@gmail.com"
-	SMTPPassword = "rajendro@1"
+	SMTPPassword = ""
 )
 
 var (

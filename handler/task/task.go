@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Rajendro1/Talenzen/config"
 	"github.com/Rajendro1/Talenzen/db/pgd"
 	"github.com/Rajendro1/Talenzen/model"
+	"github.com/Rajendro1/Talenzen/notification"
 	"github.com/gin-gonic/gin"
 )
 
@@ -70,6 +72,18 @@ func UpdateTaskHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update task"})
 		return
 	}
+	config.WG.Add(1)
+	go func() {
+		taskDetails, taskDetailsErr := pgd.GetTasksByTaskId(t.ID)
+		if taskDetailsErr != nil {
+			log.Println("UpdateTaskHandler GetTasksByTaskId Error: ", taskDetailsErr.Error())
+		}
+		if t.Status == "Completed" {
+			if err := notification.SendEmail(strconv.Itoa(taskDetails.UserID), "Task "+t.Status, "Tanks for completing the task"); err != nil {
+				log.Println("UpdateTaskHandler SendEmail Error ", err.Error())
+			}
+		}
+	}()
 	c.JSON(http.StatusOK, gin.H{"data": t})
 }
 

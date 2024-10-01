@@ -110,3 +110,20 @@ func GetTasksByUserID(userID int) ([]model.Task, error) {
 
 	return tasks, nil
 }
+
+func GetTasksByTaskId(taskId int) (model.TaskUsers, error) {
+	var t model.TaskUsers
+	var time sql.NullTime // More accurate handling of datetime fields
+	query := `SELECT t.id, t.title, t.description, t.assigned_user, t.status, t.due_date, m.user_id, u.email
+              FROM tasks t
+              INNER JOIN map_users_with_tasks m ON t.id = m.task_id
+              INNER JOIN users u ON u.id = m.user_id
+              WHERE t.id = $1`
+	if err := config.PgDbRead.QueryRow(context.Background(), query, taskId).Scan(&t.ID, &t.Title, &t.Description, &t.AssignedUser, &t.Status, &time, &t.UserID, &t.Email); err != nil {
+		return t, err
+	}
+	if time.Valid {
+		t.DueDate = time.Time.Format("2006-01-02") // Convert to string if valid
+	}
+	return t, nil
+}
