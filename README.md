@@ -105,6 +105,6 @@ go test ./tests
 To build and run the application in a Docker container, execute:
 
 ```
-docker build -t myapp ./docker
-docker run -p 8080:8080 myapp
+docker pull ghcr.io/rajendro1/task_management-main:main
+docker run -p 8080:8080 ghcr.io/rajendro1/task_management-main:main
 ```
