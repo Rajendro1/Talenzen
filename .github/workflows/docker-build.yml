@@ -26,13 +26,9 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.WORKFLOWS_TOKEN }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ghcr.io/${{ github.repository }}/assignment:latest
 
-    - name: Image digest
-      run: echo ${{ steps.build-and-push.outputs.digest }}
+    - name: Build the Podman image
+      run: |
+        podman build . --tag ghcr.io/rajendro1/assignment-$(basename ${{ github.ref }}):$(basename ${{ github.ref }}) -f docker/Dockerfile
+        podman push ghcr.io/rajendro1/assignment-$(basename ${{ github.ref }}):$(basename ${{ github.ref }})
+
