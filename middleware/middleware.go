@@ -5,19 +5,14 @@ import (
 	"time"
 
 	"github.com/Rajendro1/Talenzen/config"
+	"github.com/Rajendro1/Talenzen/model"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
 
-type Claims struct {
-	UserID string `json:"user_id"`
-	Email  string `json:"email"`
-	jwt.StandardClaims
-}
-
 func CreateToken(user_id, email string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &Claims{
+	claims := &model.Claims{
 		UserID: user_id,
 		Email:  email,
 		StandardClaims: jwt.StandardClaims{
@@ -33,7 +28,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 
-		claims := &Claims{}
+		claims := &model.Claims{}
 
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return config.JWTSecret, nil

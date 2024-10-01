@@ -78,8 +78,8 @@ func AssignTaskHandler(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
 		return
 	}
-
-	if err := pgd.AssignTask(userID, taskID); err != nil {
+	var cl model.Claims
+	if err := pgd.AssignTask(userID, taskID, cl.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to assign task", "details": err.Error()})
 		return
 	}
