@@ -26,6 +26,6 @@ jobs:
 
     - name: Build the Podman image
       run: |
-        podman build . --tag ghcr.io/rajendro1/assignment-$(basename ${{ github.ref }}):$(basename ${{ github.ref }}) -f docker/Dockerfile
-        podman push ghcr.io/rajendro1/assignment-$(basename ${{ github.ref }}):$(basename ${{ github.ref }})
+        podman build . --tag ghcr.io/rajendro1/task_management-$(basename ${{ github.ref }}):$(basename ${{ github.ref }}) -f docker/Dockerfile
+        podman push ghcr.io/rajendro1/task_management-$(basename ${{ github.ref }}):$(basename ${{ github.ref }})
 
