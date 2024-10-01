@@ -1,6 +1,10 @@
 package config
 
-import "github.com/jackc/pgx/v5/pgxpool"
+import (
+	"sync"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 const (
 	JWTSecret    = "60GqY3XPu9YShUosfYvQR8b8Yo1wM1x51SvjsUGVoezDm1cf4VvkGSSKBqgn6ZUL"
@@ -18,13 +22,14 @@ var (
 	ReadPostgresPort         = "5432"
 	ReadPostgresUser         = "postgres"
 	ReadPostgresPassword     = "postgres"
-	ReadPostgresDatabaseName = "deposite_withdrawal"
+	ReadPostgresDatabaseName = "taskmanagement"
 
 	WritePostgresHost         = "localhost"
 	WritePostgresPort         = "5432"
 	WritePostgresUser         = "postgres"
 	WritePostgresPassword     = "postgres"
-	WritePostgresDatabaseName = "deposite_withdrawal"
+	WritePostgresDatabaseName = "taskmanagement"
 
 	Err error
+	WG  sync.WaitGroup
 )

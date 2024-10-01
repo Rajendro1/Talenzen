@@ -88,3 +88,11 @@ func createPostgreSQLDatabase() error {
 
 	return nil
 }
+
+func DbMigration(db *pgxpool.Pool) error {
+	_, err := db.Exec(context.Background(), TableSql)
+	if err != nil {
+		return fmt.Errorf("DbMigration error creating table: %v", err)
+	}
+	return nil
+}

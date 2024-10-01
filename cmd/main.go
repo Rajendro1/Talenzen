@@ -17,8 +17,16 @@ func init() {
 	if config.Err != nil {
 		log.Fatal("Read Postgres Connection Err: ", config.Err)
 	}
+	config.WG.Add(1)
+	go func() {
+		defer config.WG.Done()
+		if bbMigrationErr := pgd.DbMigration(config.PgDbWrite); bbMigrationErr != nil {
+			log.Println("DbMigration Error: ", bbMigrationErr)
+		}
+	}()
 
 }
 func main() {
 	route.HandleRequests()
+	config.WG.Wait()
 }
