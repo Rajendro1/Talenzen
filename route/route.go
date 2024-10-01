@@ -14,8 +14,10 @@ func HandleRequests() {
 	router.POST("/login", auth.LoginHandler)
 	router.POST("/register", auth.RegisterHandler)
 	router.GET("/tasks", middleware.AuthMiddleware(), task.GetTasksHandler)
+	router.GET("/task_by_id/:task_id", middleware.AuthMiddleware(), task.GetTasksByIdHandler)
+	router.GET("/task_by_users/:userID", middleware.AuthMiddleware(), task.GetTasksByUserIDHandler)
 	router.POST("/tasks", middleware.AuthMiddleware(), task.CreateTaskHandler)
-	router.PUT("/tasks/:id", middleware.AuthMiddleware(), task.UpdateTaskHandler)
+	router.PUT("/tasks/", middleware.AuthMiddleware(), task.UpdateTaskHandler)
 	router.DELETE("/tasks/:id", middleware.AuthMiddleware(), task.DeleteTaskHandler)
 
 	router.Run(":8080")

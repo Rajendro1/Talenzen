@@ -1,6 +1,7 @@
 package task
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -30,7 +31,33 @@ func GetTasksHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, tasks)
 }
+func GetTasksByIdHandler(c *gin.Context) {
+	taskId := c.Param("task_id")
+	task, err := pgd.GetTasksByID(taskId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve task", "details": "Please try again later."})
+		log.Printf("Error retrieving task: %v", err)
+		return
+	}
+	c.JSON(http.StatusOK, task)
+}
 
+func GetTasksByUserIDHandler(c *gin.Context) {
+	userIDStr := c.Param("userID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	tasks, err := pgd.GetTasksByUserID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve tasks", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"tasks": tasks})
+}
 func UpdateTaskHandler(c *gin.Context) {
 	var t model.Task
 	if err := c.BindJSON(&t); err != nil {
