@@ -16,17 +16,19 @@ func CreateTaskHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := pgd.CreateTask(newTask); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create task"})
+	id, err := pgd.CreateTask(newTask)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to create task", "error": err.Error()})
 		return
 	}
-	c.Status(http.StatusCreated)
+	newTask.ID = id
+	c.JSON(http.StatusCreated, gin.H{"data": newTask})
 }
 
 func GetTasksHandler(c *gin.Context) {
 	tasks, err := pgd.GetTasks()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve tasks"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to retrieve tasks", "error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, tasks)
@@ -35,7 +37,7 @@ func GetTasksByIdHandler(c *gin.Context) {
 	taskId := c.Param("task_id")
 	task, err := pgd.GetTasksByID(taskId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve task", "details": "Please try again later."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to retrieve task", "details": "Please try again later.", "error": err.Error()})
 		log.Printf("Error retrieving task: %v", err)
 		return
 	}
@@ -68,7 +70,7 @@ func UpdateTaskHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update task"})
 		return
 	}
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"data": t})
 }
 
 func DeleteTaskHandler(c *gin.Context) {
@@ -78,19 +80,19 @@ func DeleteTaskHandler(c *gin.Context) {
 		return
 	}
 	if err := pgd.DeleteTask(id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to delete task"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete task", "error": err.Error()})
 		return
 	}
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"message": "Task deleted successfully"})
 }
 
 func AssignTaskHandler(c *gin.Context) {
-	userID, err := strconv.Atoi(c.PostForm("user_id"))
+	userID, err := strconv.Atoi(c.Request.FormValue("user_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	taskID, err := strconv.Atoi(c.PostForm("task_id"))
+	taskID, err := strconv.Atoi(c.Request.FormValue("task_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
 		return
